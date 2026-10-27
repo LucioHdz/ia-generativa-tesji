@@ -1,0 +1,227 @@
+@import 'tailwindcss';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Paleta 60-30-10
+   60 % fondo y superficies neutras con tinte azul
+   30 % azul (primario)
+   10 % verde lima (acento: señal, selección y acción principal) */
+:root {
+  --fondo: #f3f6fd;
+  --superficie: #ffffff;
+  --superficie-2: #e8eefb;
+  --borde: #d3ddf2;
+  --texto: #0b1b3f;
+  --texto-suave: #4a5b80;
+  --primario: #1d4ed8;
+  --primario-suave: #dbe6ff;
+  --primario-fuerte: #1e3a8a;
+  --acento: #84cc16;
+  --acento-texto: #1a2e05;
+  --negativo: #94a3b8;
+  color-scheme: light;
+}
+
+.dark {
+  --fondo: #07122b;
+  --superficie: #0d1c3d;
+  --superficie-2: #12264f;
+  --borde: #1e3566;
+  --texto: #e6edff;
+  --texto-suave: #93a5cf;
+  --primario: #3b82f6;
+  --primario-suave: #15306a;
+  --primario-fuerte: #93c5fd;
+  --acento: #a3e635;
+  --acento-texto: #1a2e05;
+  --negativo: #5b6b8f;
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-fondo: var(--fondo);
+  --color-superficie: var(--superficie);
+  --color-superficie-2: var(--superficie-2);
+  --color-borde: var(--borde);
+  --color-texto: var(--texto);
+  --color-texto-suave: var(--texto-suave);
+  --color-primario: var(--primario);
+  --color-primario-suave: var(--primario-suave);
+  --color-primario-fuerte: var(--primario-fuerte);
+  --color-acento: var(--acento);
+  --color-acento-texto: var(--acento-texto);
+  --color-negativo: var(--negativo);
+
+  --font-titulo: 'Quicksand', sans-serif;
+  --font-cuerpo: 'Roboto', system-ui, sans-serif;
+  --font-codigo: 'Fira Code', ui-monospace, monospace;
+}
+
+html {
+  background: var(--fondo);
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  background: var(--fondo);
+  color: var(--texto);
+  font-family: var(--font-cuerpo);
+  -webkit-font-smoothing: antialiased;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+/* Fira Code con ligaduras activas (=>, ->, !=, <=, etc.) */
+.font-codigo {
+  font-feature-settings: 'liga' 1, 'calt' 1;
+  font-variant-ligatures: contextual common-ligatures;
+}
+
+/* Profundidad sin sombras: capas de fondo con distinta distancia */
+.fondo-profundo {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+.fondo-profundo::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(var(--borde) 1px, transparent 1px),
+    linear-gradient(90deg, var(--borde) 1px, transparent 1px);
+  background-size: 44px 44px;
+  opacity: 0.45;
+  mask-image: radial-gradient(ellipse at 50% 0%, #000 20%, transparent 75%);
+}
+.fondo-profundo .orbe {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(70px);
+  opacity: 0.35;
+}
+
+/* Superficie "elevada" por tono y borde interior, no por sombra */
+.capa {
+  background: color-mix(in oklab, var(--superficie) 88%, transparent);
+  border: 1px solid var(--borde);
+  backdrop-filter: blur(10px);
+}
+.capa-hundida {
+  background: var(--superficie-2);
+  border: 1px solid color-mix(in oklab, var(--borde) 70%, transparent);
+}
+
+/* ---------- Animaciones ---------- */
+@keyframes token-entra {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.85);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.token-entra {
+  animation: token-entra 0.35s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+/* Impulso que viaja por la sinapsis (pathLength = 100) */
+@keyframes sinapsis {
+  from {
+    stroke-dashoffset: 112;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+.sinapsis-pulso {
+  stroke-dasharray: 12 100;
+  animation: sinapsis var(--duracion, 0.7s) ease-in forwards;
+}
+
+@keyframes disparo {
+  0% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(1.9);
+    opacity: 0;
+  }
+}
+.neurona-disparo {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: disparo 0.6s ease-out forwards;
+}
+
+@keyframes aparece {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.aparece {
+  animation: aparece 0.4s ease-out both;
+}
+
+@keyframes panel-entra {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.panel-entra {
+  animation: panel-entra 0.25s ease-out both;
+}
+
+/* Slider de pesos */
+input[type='range'].deslizador {
+  appearance: none;
+  height: 6px;
+  border-radius: 9999px;
+  background: linear-gradient(
+    90deg,
+    var(--primario) 0%,
+    var(--primario) var(--pct, 50%),
+    var(--superficie-2) var(--pct, 50%)
+  );
+  cursor: pointer;
+}
+input[type='range'].deslizador::-webkit-slider-thumb {
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 9999px;
+  background: var(--superficie);
+  border: 3px solid var(--acento);
+}
+input[type='range'].deslizador::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 9999px;
+  background: var(--superficie);
+  border: 3px solid var(--acento);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
